@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Tracker</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<header class="header">
+<h1>Expense Tracker</h1>
+<p>Manage your daily income and expenses</p>
+</header>
+
+
+<section class="grid">
+<div class="card balance">
+<h2>Total Balance</h2>
+<p> 0.00</p>
+</div>
+
+<div class="card income">
+<h2>Total Income</h2>
+<p> 0.00</p>
+</div>
+
+<div class="card expense">
+<h2>Total Expense</h2>
+<p>0.00</p>
+</div>
+</section>
+
+
+<section class="card">
+<h2>Add Transaction</h2>
+
+<form>
+<label>Description</label>
+<input type="text" placeholder="Food, Rent, Salary">
+
+<label>Amount</label>
+<input type="number" placeholder="Enter amount">
+
+<label>Type</label>
+<select>
+<option>Income</option>
+<option>Expense</option>
+</select>
+
+<label>Category</label>
+<input type="text" placeholder="Food / Travel / Fees / Custom">
+
+<label>Date</label>
+<input type="date">
+
+<label>Notes</label>
+<input type="text" placeholder="Optional">
+
+<button>Add Transaction</button>
+</form>
+</section>
+
+
+<section class="card">
+<h2>Recent Transactions</h2>
+<ul>
+<li class="plus">Salary + ₹5000</li>
+<li class="minus">Food - ₹200</li>
+<li class="minus">Travel - ₹150</li>
+</ul>
+</section>
+
+<footer>
+<p>Developed by Sachin Mishra  PBL Project</p>
+</footer>
+
+</div>
+
+</body>
+</html>
+
