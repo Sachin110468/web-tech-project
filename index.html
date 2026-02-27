@@ -16,61 +16,56 @@
 <p>Manage your daily income and expenses</p>
 </header>
 
-
 <section class="grid">
+
 <div class="card balance">
 <h2>Total Balance</h2>
-<p> 0.00</p>
+<p>₹ <span id="balance">0</span></p>
 </div>
 
 <div class="card income">
 <h2>Total Income</h2>
-<p> 0.00</p>
+<p>₹ <span id="income-total">0</span></p>
 </div>
 
 <div class="card expense">
 <h2>Total Expense</h2>
-<p>0.00</p>
+<p>₹ <span id="expense-total">0</span></p>
 </div>
-</section>
 
+</section>
 
 <section class="card">
 <h2>Add Transaction</h2>
 
-<form>
-<label>Description</label>
-<input type="text" placeholder="Food, Rent, Salary">
+<form id="transaction-form">
 
 <label>Amount</label>
-<input type="number" placeholder="Enter amount">
+<input type="number" id="amount" placeholder="Enter amount" required>
 
 <label>Type</label>
-<select>
-<option>Income</option>
-<option>Expense</option>
+<select id="type">
+<option value="Income">Income</option>
+<option value="Expense">Expense</option>
 </select>
 
 <label>Category</label>
-<input type="text" placeholder="Food / Travel / Fees / Custom">
+<input type="text" id="category" placeholder="Food / Travel / Fees / Custom" required>
 
 <label>Date</label>
-<input type="date">
+<input type="date" id="date">
 
 <label>Notes</label>
-<input type="text" placeholder="Optional">
+<input type="text" id="notes" placeholder="Optional">
 
-<button>Add Transaction</button>
+<button type="submit">Add Transaction</button>
+
 </form>
 </section>
 
-
 <section class="card">
 <h2>Recent Transactions</h2>
-<ul>
-<li class="plus">Salary + ₹5000</li>
-<li class="minus">Food - ₹200</li>
-<li class="minus">Travel - ₹150</li>
+<ul id="transaction-list">
 </ul>
 </section>
 
@@ -79,7 +74,7 @@
 </footer>
 
 </div>
+<script src="js/script.js"></script>
 
 </body>
 </html>
-
