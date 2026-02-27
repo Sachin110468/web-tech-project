@@ -1,4 +1,4 @@
-{
+* {
 margin: 0;
 padding: 0;
 box-sizing: border-box;
@@ -92,4 +92,19 @@ margin-top: 20px;
 color: #555;
 font-size: 14px;
 }
+.plus {
+    color: green;
+}
+
+.minus {
+    color: red;
+}
+
+#transaction-list li {
+    list-style: none;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+
 
