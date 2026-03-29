@@ -105,6 +105,9 @@ font-size: 14px;
     padding: 10px;
     margin: 5px 0;
 }
+#category-cards .card {
+    border-left: 6px solid #6c5ce7;
+}
 
 
 
