@@ -16,6 +16,7 @@
 <p>Manage your daily income and expenses</p>
 </header>
 
+
 <section class="grid">
 
 <div class="card balance">
@@ -35,6 +36,11 @@
 
 </section>
 
+
+<section class="grid" id="category-cards">
+</section>
+
+
 <section class="card">
 <h2>Add Transaction</h2>
 
@@ -50,7 +56,19 @@
 </select>
 
 <label>Category</label>
-<input type="text" id="category" placeholder="Food / Travel / Fees / Custom" required>
+<input type="text" id="category" list="category-options" placeholder="Select or type category" required>
+
+<datalist id="category-options">
+<option value="Food">
+<option value="Travel">
+<option value="Shopping">
+<option value="Bills">
+<option value="Salary">
+<option value="Rent">
+<option value="Entertainment">
+<option value="Education">
+<option value="Medical">
+</datalist>
 
 <label>Date</label>
 <input type="date" id="date">
@@ -63,17 +81,35 @@
 </form>
 </section>
 
+<!-- TRANSACTIONS -->
 <section class="card">
 <h2>Recent Transactions</h2>
-<ul id="transaction-list">
-</ul>
+<ul id="transaction-list"></ul>
+</section>
+
+
+<section class="card">
+<h2>Category Summary</h2>
+<p id="category-summary"></p>
+
+
+<canvas id="myChart"></canvas>
+</section>
+
+
+<section class="card">
+<button onclick="downloadData()">Download Data</button>
 </section>
 
 <footer>
-<p>Developed by Sachin Mishra  PBL Project</p>
+<p>Developed by Sachin Mishra</p>
 </footer>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script src="script.js"></script>
+
 </body>
 </html>
