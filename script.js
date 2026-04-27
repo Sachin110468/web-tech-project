@@ -20,8 +20,49 @@ let expenseTotal = 0;
 let chart = null;
 
 
+
+function loadData() {
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+        alert("Login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    fetch(`http://localhost:5000/data/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+
+            transactionList.innerHTML = "";
+            categoryData = {};
+            incomeTotal = 0;
+            expenseTotal = 0;
+
+            if (data.length === 0) {
+                transactionList.innerHTML = "<p>No transactions yet</p>";
+            }
+
+            data.forEach(item => {
+                addToUI(item);
+            });
+
+            updateAll();
+        })
+        .catch(err => {
+            console.log(err);
+            alert("Error loading data");
+        });
+}
+
+loadData();
+
+
+
 form.addEventListener("submit", function (e) {
     e.preventDefault();
+
+    const userId = localStorage.getItem("userId");
 
     const amount = parseFloat(amountInput.value);
     const type = typeInput.value;
@@ -34,73 +75,86 @@ form.addEventListener("submit", function (e) {
         return;
     }
 
+    const newData = { userId, amount, type, category, date, notes };
+
+    fetch("http://localhost:5000/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newData)
+    })
+    .then(res => res.json())
+    .then(() => {
+        loadData();
+    })
+    .catch(err => console.log(err));
+
+    form.reset();
+});
+
+
+
+function addToUI(data) {
+    const { id, amount, type, category, date, notes } = data;
+
     const li = document.createElement("li");
 
     if (type === "Income") {
         li.classList.add("plus");
-        incomeTotal += amount;
-        incomeEl.textContent = incomeTotal;
+        incomeTotal += Number(amount);
     } else {
         li.classList.add("minus");
-        expenseTotal += amount;
-        expenseEl.textContent = expenseTotal;
+        expenseTotal += Number(amount);
 
         if (!categoryData[category]) {
             categoryData[category] = 0;
         }
-        categoryData[category] += amount;
+        categoryData[category] += Number(amount);
     }
 
     li.innerHTML = `
-        ${category} : ₹${amount} <br>
-        Date: ${date || "N/A"} <br>
-        Notes: ${notes || "N/A"}
+        <strong>${category}</strong> : ₹${amount} <br>
+        <small>Date: ${date || "N/A"}</small><br>
+        <small>Notes: ${notes || "N/A"}</small>
     `;
 
     const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = " X";
+    deleteBtn.textContent = "X";
     deleteBtn.style.marginLeft = "10px";
 
     deleteBtn.addEventListener("click", function () {
-        transactionList.removeChild(li);
-
-        if (type === "Income") {
-            incomeTotal -= amount;
-            incomeEl.textContent = incomeTotal;
-        } else {
-            expenseTotal -= amount;
-            expenseEl.textContent = expenseTotal;
-
-            categoryData[category] -= amount;
-
-            if (categoryData[category] <= 0) {
-                delete categoryData[category];
-            }
-        }
-
-        updateAll();
+        fetch(`http://localhost:5000/delete/${id}`, {
+            method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(() => {
+            loadData();
+        })
+        .catch(err => console.log(err));
     });
 
     li.appendChild(deleteBtn);
     transactionList.appendChild(li);
-
-    checkLimit();
-    updateAll();
-
-    form.reset();
-});
+}
 
 
 function updateAll() {
     updateBalance();
     updateCategoryUI();
     updateCategoryCards();
-    updateChart(); 
+    updateChart();
+    checkLimit();
 }
+
+
 
 function updateBalance() {
     balanceEl.textContent = incomeTotal - expenseTotal;
+    incomeEl.textContent = incomeTotal;
+    expenseEl.textContent = expenseTotal;
 }
+
 
 
 function checkLimit() {
@@ -108,6 +162,7 @@ function checkLimit() {
         alert("⚠ Warning! You crossed your expense limit!");
     }
 }
+
 
 
 function updateCategoryUI() {
@@ -153,7 +208,10 @@ function updateChart() {
     const labels = Object.keys(categoryData);
     const data = Object.values(categoryData);
 
-    if (labels.length === 0) return;
+    if (labels.length === 0) {
+        if (chart) chart.destroy();
+        return;
+    }
 
     if (chart) {
         chart.destroy();
