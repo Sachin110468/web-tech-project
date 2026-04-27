@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url("https://images.unsplash.com/photo-1554224155-6726b3ff858f") no-repeat center center/cover;
+}
+
+.overlay {
+    background: rgba(0, 0, 0, 0.5);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 350px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.container h2 {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: gray;
+    margin-bottom: 10px;
+}
+
+.note {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+button {
+    width: 95%;
+    padding: 12px;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.login-btn {
+    background: #2c7be5;
+}
+
+.login-btn:hover {
+    background: #1a5fd1;
+}
+
+.register-btn {
+    background: #28a745;
+}
+
+.register-btn:hover {
+    background: #1e7e34;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="overlay">
+    <div class="container">
+
+        <h2>Expense Tracker</h2>
+        <p class="subtitle">Login or Register to continue</p>
+        <p class="note">New user? Click Register first</p>
+
+        <input type="text" id="username" placeholder="Enter Username" autocomplete="off">
+        <input type="password" id="password" placeholder="Enter Password" autocomplete="new-password">
+
+        <button class="login-btn" onclick="login()">Login</button>
+        <button class="register-btn" onclick="register()">Register</button>
+
+    </div>
+</div>
+
+<script>
+
+
+function register() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        alert("Enter username & password");
+        return;
+    }
+
+    fetch("http://localhost:5000/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+    });
+}
+
+
+
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            localStorage.setItem("userId", data.userId);
+            window.location.href = "ui.html";
+        } else {
+            alert("Invalid Login ❌");
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
