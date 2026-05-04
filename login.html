@@ -135,7 +135,7 @@ function login() {
         if (data.success) {
             localStorage.setItem("userId", data.userId);
             localStorage.setItem("username", username);  
-            window.location.href = "ui.html";
+            window.location.href = "index.html";
         } else {
             alert("Invalid Login ❌");
         }
