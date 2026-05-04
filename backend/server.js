@@ -17,7 +17,7 @@ app.get("/check", (req, res) => {
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "969578@",
+    password: "your_password",
     database: "expense_tracker"
 });
 
