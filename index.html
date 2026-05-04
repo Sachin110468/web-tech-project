@@ -2,18 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Expense Tracker Dashboard</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-
 <script>
-if (!localStorage.getItem("userId")) {
-    alert("Please login first");
-    window.location.href = "login.html";
+
+const userId = localStorage.getItem("userId");
+if (!userId) {
+    window.location.replace("login.html");
 }
 </script>
 
@@ -21,10 +20,14 @@ if (!localStorage.getItem("userId")) {
 
 <header class="header">
 <h1>Expense Tracker</h1>
+
+
 <p id="welcomeUser"></p>
 
 <button onclick="logout()" style="float:right;">Logout</button>
 </header>
+
+
 
 <section class="grid">
 
@@ -45,7 +48,11 @@ if (!localStorage.getItem("userId")) {
 
 </section>
 
+
+
 <section class="grid" id="category-cards"></section>
+
+
 
 <section class="card">
 <h2>Add Transaction</h2>
@@ -53,7 +60,7 @@ if (!localStorage.getItem("userId")) {
 <form id="transaction-form">
 
 <label>Amount</label>
-<input type="number" id="amount" required>
+<input type="number" id="amount" required min="1">
 
 <label>Type</label>
 <select id="type">
@@ -87,10 +94,14 @@ if (!localStorage.getItem("userId")) {
 </form>
 </section>
 
+
+
 <section class="card">
 <h2>Recent Transactions</h2>
 <ul id="transaction-list"></ul>
 </section>
+
+
 
 <section class="card">
 <h2>Category Summary</h2>
@@ -102,9 +113,12 @@ if (!localStorage.getItem("userId")) {
 
 </section>
 
+
+
 <section class="card">
 <button onclick="downloadData()">Download Data</button>
 </section>
+
 
 <footer>
 <p>Developed by Sachin Mishra</p>
@@ -112,19 +126,22 @@ if (!localStorage.getItem("userId")) {
 
 </div>
 
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="js/script.js"></script>
 
 <script>
 
 function logout() {
-    localStorage.removeItem("userId");
+    localStorage.clear();
     window.location.href = "login.html";
 }
 
 
+const username = localStorage.getItem("username") || "User";
 document.getElementById("welcomeUser").innerText =
-    "Welcome, " + localStorage.getItem("userId");
+    "Welcome, " + username;
 </script>
 
 </body>
