@@ -10,22 +10,24 @@ app.use(express.json());
 
 
 
+app.get("/check", (req, res) => {
+    res.send("OK WORKING");
+});
+
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "YOUR_PASSWORD",
+    password: "969578@",
     database: "expense_tracker"
 });
 
 db.connect(err => {
     if (err) {
-        console.log(" DB Error:", err);
+        console.log("DB Error:", err);
     } else {
-        console.log(" MySQL Connected");
+        console.log("MySQL Connected");
     }
 });
-
-
 
 app.get("/", (req, res) => {
     res.send("Server running");
@@ -36,42 +38,52 @@ app.get("/", (req, res) => {
 app.post("/register", async (req, res) => {
     const { username, password } = req.body;
 
+    console.log("REGISTER API:", username, password);
+
     if (!username || !password) {
         return res.json({ success: false, message: "Enter all fields" });
     }
 
-    try {
-      
-        db.query("SELECT * FROM users WHERE username=?", [username], async (err, result) => {
-            if (err) return res.send(err);
+    db.query("SELECT * FROM users WHERE username=?", [username], async (err, result) => {
 
-            if (result.length > 0) {
-                return res.json({ success: false, message: "User already exists" });
-            }
+        if (err) {
+            console.log("SELECT ERROR:", err);
+            return res.json({ success: false, message: "DB error" });
+        }
 
-           
+        if (result.length > 0) {
+            return res.json({ success: false, message: "User already exists" });
+        }
+
+        try {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             db.query(
                 "INSERT INTO users (username, password) VALUES (?, ?)",
                 [username, hashedPassword],
-                (err, result) => {
-                    if (err) return res.send(err);
+                (err) => {
+                    if (err) {
+                        console.log("INSERT ERROR:", err);
+                        return res.json({ success: false, message: "Insert error" });
+                    }
 
-                    res.json({ success: true, message: "User Registered " });
+                    res.json({ success: true, message: "User Registered" });
                 }
             );
-        });
 
-    } catch (error) {
-        res.status(500).send("Error");
-    }
+        } catch (e) {
+            console.log("HASH ERROR:", e);
+            res.json({ success: false, message: "Hash error" });
+        }
+    });
 });
 
 
 
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
+
+    console.log("LOGIN API:", username, password);
 
     if (!username || !password) {
         return res.json({ success: false });
@@ -81,19 +93,27 @@ app.post("/login", (req, res) => {
         "SELECT * FROM users WHERE username=?",
         [username],
         async (err, result) => {
-            if (err) return res.send(err);
+
+            if (err) {
+                console.log("LOGIN ERROR:", err);
+                return res.json({ success: false });
+            }
 
             if (result.length === 0) {
                 return res.json({ success: false });
             }
 
-            const user = result[0];
+            try {
+                const match = await bcrypt.compare(password, result[0].password);
 
-            const match = await bcrypt.compare(password, user.password);
+                if (match) {
+                    res.json({ success: true, userId: result[0].id });
+                } else {
+                    res.json({ success: false });
+                }
 
-            if (match) {
-                res.json({ success: true, userId: user.id });
-            } else {
+            } catch (e) {
+                console.log("COMPARE ERROR:", e);
                 res.json({ success: false });
             }
         }
@@ -101,7 +121,7 @@ app.post("/login", (req, res) => {
 });
 
 
-
+// बाकी code same
 app.post("/add", (req, res) => {
     const { userId, amount, type, category, date, notes } = req.body;
 
@@ -109,53 +129,38 @@ app.post("/add", (req, res) => {
         return res.status(400).json({ message: "Missing fields" });
     }
 
-    const sql = `
-        INSERT INTO transactions (userId, amount, type, category, date, notes)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
-
-    db.query(sql, [userId, amount, type, category, date, notes], (err, result) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Error");
+    db.query(
+        "INSERT INTO transactions (userId, amount, type, category, date, notes) VALUES (?, ?, ?, ?, ?, ?)",
+        [userId, amount, type, category, date, notes],
+        (err) => {
+            if (err) return res.status(500).send("Error");
+            res.json({ message: "Transaction Added" });
         }
-        res.json({ message: "Transaction Added" });
-    });
+    );
 });
-
-
 
 app.get("/data/:userId", (req, res) => {
-    const userId = req.params.userId;
-
-    const sql = "SELECT * FROM transactions WHERE userId=? ORDER BY id DESC";
-
-    db.query(sql, [userId], (err, result) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Error");
+    db.query(
+        "SELECT * FROM transactions WHERE userId=? ORDER BY id DESC",
+        [req.params.userId],
+        (err, result) => {
+            if (err) return res.status(500).send("Error");
+            res.json(result);
         }
-        res.json(result);
-    });
+    );
 });
-
 
 app.delete("/delete/:id", (req, res) => {
-    const id = req.params.id;
-
-    const sql = "DELETE FROM transactions WHERE id=?";
-
-    db.query(sql, [id], (err, result) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Error");
+    db.query(
+        "DELETE FROM transactions WHERE id=?",
+        [req.params.id],
+        (err) => {
+            if (err) return res.status(500).send("Error");
+            res.json({ message: "Deleted" });
         }
-        res.json({ message: "Deleted" });
-    });
+    );
 });
 
-
-
 app.listen(5000, () => {
-    console.log(" Server started on port 5000");
+    console.log("Server started on port 5000");
 });
